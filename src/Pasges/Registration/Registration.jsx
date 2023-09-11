@@ -3,7 +3,7 @@ import { useState } from "react";
 const Registration = () => {
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
-    const [fullname, setFullname] = useState()
+    const [fullName, setFullname] = useState()
 
     const [emailError, setEmailError] = useState()
     const [passwordError, setPasswordError] = useState()
@@ -23,47 +23,79 @@ const Registration = () => {
         setFullnameError(' ')
     }
 
+    const emailValidation = (email) => {
+        const emailRegex = /^[a-zA-Z0-9._%+-]+@(gmail\.com|yahoo\.com|hotmail\.com)$/i;
+        return emailRegex.test(email);
+    }
+
     const handleSubmit = () => {
         if (!email) {
-            setEmailError('insert your email')
+            setEmailError('Enter Your Email')
+        }
+        else if (!emailValidation(email)) {
+            setEmailError('invalid email')
+        }
+        else {
+            setEmailError('valid email')
         }
         if (!password) {
-            setPasswordError('insert your password')
+            setPasswordError('Enter your password')
         }
-        if (!fullname) {
-            setFullnameError('insert your fullname')
+        if (!fullName) {
+            setFullnameError('Enter your full name')
         }
+
+        // else if () {
+        //     setEmailError("invalid Email.");
+        // }
+
     }
+
     return (
         <div className='flex'>
-            <div className='w-1/2 flex justify-end mr-56 mt-40 '>
+            <div className='w-1/2 flex justify-end mr-52 mt-40 '>
                 <div>
                     <h1 className='font-nunito font-bold text-3xl text-secondary'>Get started with easily register</h1>
                     <h3 className="text-[#808080] font-nunito text-base mt-4">Free register and you can enjoy it</h3>
 
                     <div className="relative mt-12">
-                        <input onChange={handleEmail} type="email" placeholder="Email" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg" required />
+                        <input onChange={handleEmail} type="email" placeholder="Email" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg required " />
                         <p className="absolute top-[28px] left-[50px]  px-[6px] bg-white font-nunito text-secondary font-semibold tracking-[2px]">Email Address</p>
-                        {
+                        {/* {
                             emailError &&
-                            <p className=" w-96 bg-teal-500 h-0">{emailError}</p>
+                            <p className="text-white  bg-red-500 w-96 h-auto">{emailError}</p>
+                        } */}
+
+                        {
+                            !emailValidation ?
+                                <p className="text-white  bg-green-500 w-96 h-auto">{emailError}</p>
+                                :
+                                <p className="text-white  bg-red-500 w-96 h-auto">{emailError}</p>
                         }
 
                     </div>
 
-                    <div className="relative mt-8">
+                    <div className="relative mt-4">
                         <input onChange={handlePassword} type="text" placeholder="Name" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg" />
                         <p className="absolute top-[28px] left-[50px]  px-[6px] bg-white font-nunito text-secondary font-semibold tracking-[2px]">Full Name</p>
-                        <p>{passwordError}</p>
+                        {
+                            passwordError &&
+                            <p className="text-white  bg-red-500 w-96 h-auto  ">{passwordError}</p>
+                        }
                     </div>
 
-                    <div className="relative mt-8">
+                    <div className="relative mt-4">
                         <input onChange={handleFullname} type="password" placeholder="password" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg" />
                         <p className="absolute top-[28px] left-[50px]  px-[6px] bg-white font-nunito text-secondary font-semibold tracking-[2px]">Password</p>
-                        <p>{fullnameError}</p>
+                        {
+                            fullnameError &&
+                            <p className="text-white  bg-red-500 w-96 h-autox ">{fullnameError}</p>
+                        }
+
                     </div>
 
-                    <button onClick={handleSubmit} className=" font-nunito font-bold text-white text-[20px] border border-blue-500 py-6 w-96 rounded-[50px] bg-primary mt-8  ">Sign Up</button>
+                    <button type="submit" onClick={handleSubmit} className=" font-nunito font-bold text-white text-[20px] border border-blue-500 py-6 w-96 rounded-[50px] bg-primary mt-8  ">Sign Up</button>
+
                     <p className="font-nunito text-lg mt-8 text-center w-96 ">Already Have an Account ? <span className="font-bold text-orange-600">Sign In  </span></p>
 
                 </div>
