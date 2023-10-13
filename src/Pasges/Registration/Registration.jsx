@@ -45,9 +45,6 @@ const Registration = () => {
         else if (!emailValidation(email)) {
             setEmailError('invalid email')
         }
-        else {
-            setEmailError('valid email')
-        }
         if (!password) {
             setPasswordError('Enter your password')
         }
@@ -62,7 +59,13 @@ const Registration = () => {
                     sendEmailVerification(auth.currentUser)
                         .then(() => {
                             toast.success('Registration done . Please Verify your email');
-                            console.log('email sent');
+                            setEmail(' ');
+                            setFullname(' ');
+                            setPassword(' ')
+
+                            setTimeout(() => {
+                                navigateLogin()
+                            }, 3000)
                         });
                 })
                 .catch((error) => {
@@ -130,7 +133,7 @@ const Registration = () => {
                     <button type="submit" onClick={handleSubmit} className=" font-nunito font-bold text-white text-[20px] border border-blue-500 py-6 w-96 rounded-[50px] bg-primary mt-8  ">Sign Up</button>
 
                     <p className="font-nunito text-lg mt-8 text-center w-96 ">Already Have an Account ? <span className="font-bold text-orange-600">
-                        <Link onClick={navigateLogin} to='/login'> Login </Link>
+                        <Link to='/login'> Login </Link>
                     </span></p>
 
                 </div>
