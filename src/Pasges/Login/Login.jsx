@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { FcGoogle } from 'react-icons/fc'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
-import { Link, useNavigate, } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAuth } from "firebase/auth";
 // import auth from "../../firebase-config";
 import { ToastContainer, toast } from 'react-toastify';
@@ -22,7 +22,6 @@ const Login = () => {
     const handleEmail = (e) => {
         setEmail(e.target.value)
         setEmailError(' ')
-
     }
     const handlePassword = (e) => {
         setPassword(e.target.value)
@@ -50,22 +49,14 @@ const Login = () => {
                 .then((user) => {
                     console.log('this is user', user);
                     toast.success('Login Successfully!')
+                    dispatch(userLoginInfo(user))
+                    localStorage.setItem('userLoginInfo', JSON.stringify(userLoginInfo(user)))
                     setTimeout(() => {
                         navigate('/')
                     }, 3000)
                 })
                 .catch((error) => {
                     const errorCode = error.code;
-                    // if (errorCode.includes('auth/user-not-found')) {
-                    //     setEmailError('email not match')
-                    // }
-                    // if (errorCode.includes('auth/wrong-password')) {
-                    //     setPasswordError('wrong password')
-                    // }
-
-                    // const errorCode = error.code;
-                    // const errorMessage = error.message;
-                    // console.log(errorCode, errorMessage)
                     console.log(errorCode);
                 });
 
@@ -76,9 +67,6 @@ const Login = () => {
         signInWithPopup(auth, provider)
             .then((user) => {
                 console.log(user.user)
-
-                dispatch(userLoginInfo(user.user))
-                localStorage.setItem('userLoginInfo', JSON.stringify(userLoginInfo(user)))
                 setTimeout(() => {
                     navigate('/')
                 }, 3000);

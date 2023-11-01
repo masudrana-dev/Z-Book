@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useNavigate, Link } from 'react-router-dom'
 import { AiFillEye, AiFillEyeInvisible } from 'react-icons/ai'
-import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } from "firebase/auth";
 import auth from "../../firebase-config";
 import { ToastContainer, toast } from 'react-toastify';
-
+import { LineWave } from 'react-loader-spinner'
 
 const Registration = () => {
 
@@ -18,6 +18,7 @@ const Registration = () => {
     const [fullnameError, setFullnameError] = useState()
     const [passwordShow, setPasswordShow] = useState(false)
     const [success, setSuccess] = useState()
+    const [loadeing, setLoading] = useState(false)
 
 
     const handleEmail = (e) => {
@@ -53,22 +54,28 @@ const Registration = () => {
         }
 
         if (email && fullName && password && emailValidation) {
+            setLoading(true)
             createUserWithEmailAndPassword(auth, email, password)
-                .then(() => {
+                .then((user) => {
                     console.log('registration done')
-                    sendEmailVerification(auth.currentUser)
-                        .then(() => {
-                            toast.success('Registration done . Please Verify your email');
-                            setEmail(' ');
-                            setFullname(' ');
-                            setPassword(' ')
 
-                            setTimeout(() => {
-                                navigateLogin()
-                            }, 3000)
-                        });
-                })
-                .catch((error) => {
+                    updateProfile(auth.currentUser, {
+                        displayName: fullName,
+                        photoURL: "https://example.com/jane-q-user/profile.jpg"
+                    }).then(() => {
+                        toast.success('Registration done . Please Verify your email');
+                        console.log(user, 'user')
+                        setEmail(' ');
+                        setFullname(' ');
+                        setPassword(' ')
+                        setLoading(true)
+                        sendEmailVerification(auth.currentUser)
+
+                        setTimeout(() => {
+                            navigateLogin()
+                        }, 3000)
+                    })
+                }).catch((error) => {
                     if (error.code.includes('auth/email-already-in-use')) {
                         setEmailError('This email has been used')
                     }
@@ -105,7 +112,7 @@ const Registration = () => {
                     </div>
                     {/* full-name function  */}
                     <div className="relative mt-6">
-                        <input onChange={handlePassword} type="text" placeholder="Name" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg" />
+                        <input onChange={handleFullname} type="text" placeholder="Name" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg" />
                         <p className="absolute top-[28px] left-[50px]  px-[6px] bg-white font-nunito text-secondary font-semibold tracking-[2px]">Full Name</p>
                         {
                             fullnameError &&
@@ -115,7 +122,7 @@ const Registration = () => {
 
                     {/* password function  */}
                     <div className="relative mt-6">
-                        <input onChange={handleFullname} type={passwordShow ? 'text' : 'password'} placeholder="password" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg" />
+                        <input onChange={handlePassword} type={passwordShow ? 'text' : 'password'} placeholder="password" className="  px-14 py-6 w-96 mt-10 border border-[#EAEAF0] rounded-lg" />
                         <p className="absolute top-[28px] left-[50px]  px-[6px] bg-white font-nunito text-secondary font-semibold tracking-[2px]">Password</p>
                         {
                             passwordShow ?
@@ -130,7 +137,24 @@ const Registration = () => {
                         }
 
                     </div>
-                    <button type="submit" onClick={handleSubmit} className=" font-nunito font-bold text-white text-[20px] border border-blue-500 py-6 w-96 rounded-[50px] bg-primary mt-8  ">Sign Up</button>
+                    {
+                        loadeing ?
+
+                            <LineWave
+                                height="100"
+                                width="100"
+                                color="#4fa94d"
+                                ariaLabel="line-wave"
+                                wrapperStyle={{}}
+                                wrapperClass=""
+                                visible={true}
+                                firstLineColor="#000"
+                                middleLineColor=""
+                                lastLineColor=""
+                            />
+                            :
+                            <button type="submit" onClick={handleSubmit} className=" font-nunito font-bold text-white text-[20px] border border-blue-500 py-6 w-96 rounded-[50px] bg-primary mt-8  ">Sign Up</button>
+                    }
 
                     <p className="font-nunito text-lg mt-8 text-center w-96 ">Already Have an Account ? <span className="font-bold text-orange-600">
                         <Link to='/login'> Login </Link>
