@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useEffect, useState } from "react";
 import Sidebar from "../../Component/Sidebar/Sidebar";
 import { onAuthStateChanged } from "firebase/auth";
@@ -11,12 +11,13 @@ import Friends from "../../Component/Friends/Friends";
 import MyGroups from "../../Component/MyGroups/MyGroups";
 import UserList from "../../Component/UserLilst/UserList";
 import BlockList from "../../Component/BlockList/BlockList";
+import { userLoginInfo } from "../Slice/userSlice";
 
 const Home = () => {
     const [verify, setVerify] = useState(false)
     const navigate = useNavigate()
+    const dispatch = useDispatch()
     const data = useSelector(state => state.userLoginInfo.userInfo)
-    console.log(data);
     useEffect(() => {
         if (!data) {
             console.log('no data');
@@ -24,10 +25,11 @@ const Home = () => {
         }
     })
     onAuthStateChanged(auth, (user) => {
-        // console.log('Hurrah ', user)
         if (user.emailVerified) {
             setVerify(true)
             navigate('/')
+            dispatch(userLoginInfo(user))
+            localStorage.setItem('userLoginInfo', JSON.stringify(userLoginInfo(user)))
         }
     })
     return (

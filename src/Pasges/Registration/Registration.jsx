@@ -5,9 +5,11 @@ import { createUserWithEmailAndPassword, sendEmailVerification, updateProfile } 
 import auth from "../../firebase-config";
 import { ToastContainer, toast } from 'react-toastify';
 import { LineWave } from 'react-loader-spinner'
+import { getDatabase, ref, set } from "firebase/database";
+
 
 const Registration = () => {
-
+    const db = getDatabase();
     const [email, setEmail] = useState()
     const [password, setPassword] = useState()
     const [fullName, setFullname] = useState()
@@ -61,7 +63,7 @@ const Registration = () => {
 
                     updateProfile(auth.currentUser, {
                         displayName: fullName,
-                        photoURL: "https://example.com/jane-q-user/profile.jpg"
+                        photoURL: "./src/assets/profile.png"
                     }).then(() => {
                         toast.success('Registration done . Please Verify your email');
                         console.log(user, 'user')
@@ -70,10 +72,16 @@ const Registration = () => {
                         setPassword(' ')
                         setLoading(true)
                         sendEmailVerification(auth.currentUser)
-
                         setTimeout(() => {
                             navigateLogin()
                         }, 3000)
+                    }).then(() => {
+                        console.log(user.user.displayName)
+                        set(ref(db, 'users/' + user.user.uid), {
+                            username: user.user.displayName,
+                            email: user.user.email
+                        });
+
                     })
                 }).catch((error) => {
                     if (error.code.includes('auth/email-already-in-use')) {
