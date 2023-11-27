@@ -2,11 +2,12 @@ import { BsThreeDotsVertical } from 'react-icons/bs'
 import portfolio from '../../assets/Porfolio.png'
 import { getDatabase, ref, onValue } from "firebase/database";
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 const UserList = () => {
+    const data = useSelector(state => state.userLoginInfo.userInfo.user)
     const db = getDatabase();
     const [userData, setUserData] = useState([])
-
 
     useEffect(() => {
         const userRef = ref(db, 'users/');
@@ -14,9 +15,33 @@ const UserList = () => {
             console.log(snapshot.val());
             let arr = []
             snapshot.forEach((item) => {
-                arr.push(item.val())
+                if (data.uid != item.key) {
+                    // arr.push(...item.val(), userid: item.key)
+                    arr.push(...item.val(), userid : item.key)
+                }
             })
             setUserData(arr)
+        });
+    }, [])
+
+    const handleFriendrequest = (item) => {
+        set(push(ref(db, 'friendrequest/')), {
+            sendername: data.displayName,
+            senderid: data.uid,
+            recievername: item.username,
+            recieverid: item.userid
+        })
+    }
+
+    useEffect(() => {
+        const friendRequest = ref(db, 'friendrequest/');
+        onValue(friendRequest, (snapshot) => {
+
+            // let arr = []
+            snapshot.forEach((item) => {
+                console.log(item.val())
+
+            })
         });
     }, [])
     console.log(userData, 'userData');
@@ -38,7 +63,7 @@ const UserList = () => {
                             <h3 className="font-nunito font-bold text-[16px] w-full">{item.username}</h3>
                             <p className="font-nunito font-light ">{item.email}</p>
                         </div>
-                        <div className="bg-primary font-bold text-white ml-[40px] py-[6px] px-[20px] text-xl">
+                        <div onClick={handleFriendrequest} className="bg-primary font-bold text-white ml-[40px] py-[6px] px-[20px] text-xl">
                             +
                         </div>
                     </div>
